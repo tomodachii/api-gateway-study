@@ -1,6 +1,10 @@
 version: "3"
 
 services:
+  auth_service:
+    build: ./auth_service/.
+    ports:
+      - "8083:8083"
   post_service:
     build: ./post_service/.
     ports:
@@ -21,6 +25,7 @@ services:
       - ./nginx-config/api_json_errors.conf:/etc/nginx/api_json_errors.conf:ro
       - ./nginx-config/api_keys.conf:/etc/nginx/api_keys.conf:ro
     depends_on:
+      - auth_service
       - post_service
       - user_service
     
