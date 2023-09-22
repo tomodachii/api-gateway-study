@@ -33,17 +33,43 @@ app.post('/encode', (req, res) => {
 });
 
 app.get('/decode', (req, res) => {
-  const token = req.header('Authorization').split(' ')[1]; // Extract the token part from the Authorization header
+  try {
+    console.log('hello');
+    const authorizationHeader = req.header('Authorization');
 
-  // Verify and decode the JWT token
-  jwt.verify(token, privateKey, (err, decoded) => {
-    if (err) {
-      res.status(401).send('JWT verification failed');
-    } else {
-      res.send(decoded);
+    // Check if the Authorization header is missing
+    if (!authorizationHeader) {
+      res.status(401).send('Authorization header missing');
+      return; // Exit the handler
     }
-  });
+
+    // Check if the Authorization header starts with 'Bearer '
+    if (!authorizationHeader.startsWith('Bearer ')) {
+      res.status(401).send('Bearer token missing');
+      return; // Exit the handler
+    }
+
+    const token = authorizationHeader.split(' ')[1]; // Extract the token part from the Authorization header
+
+    // Verify and decode the JWT token
+    jwt.verify(token, privateKey, (err, decoded) => {
+      if (err) {
+        // Log the error
+        console.error('JWT verification failed:', err);
+
+        // Send a 401 Unauthorized response
+        res.status(401).send('JWT verification failed');
+      } else {
+        res.send(decoded);
+      }
+    });
+  } catch (error) {
+    // Handle other errors, if any
+    console.error('An error occurred:', error);
+    res.status(500).send('Internal server error');
+  }
 });
+
  
 app.listen(PORT, HOST, () => {
   console.log(`Running on http://${HOST}:${PORT}`);
