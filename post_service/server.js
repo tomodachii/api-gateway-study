@@ -9,7 +9,17 @@ const HOST = '0.0.0.0';
 // App
 const app = express();
 app.get('/post', (req, res) => {
-  res.send('Hello from post service');``
+  const username = req.header('X-Username'); // Access the X-Username header
+  console.log(req.headers)
+  console.log('Username:', username);
+  res.send({
+    "meta": {
+    },
+    "data": {
+      "username": username,
+      "message": 'Hello from post service mtfk'
+    }
+  });``
 });
  
 app.listen(PORT, HOST, () => {

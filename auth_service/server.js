@@ -26,7 +26,12 @@ app.post('/encode', (req, res) => {
     // If authenticated, generate a JWT token
     const token = jwt.sign({ username: username }, privateKey);
     console.log(token);
-    res.send(token);
+    res.send({
+      "meta": {},
+      "data": {
+        "token": token
+      }
+    });
   } else {
     res.status(401).send('Authentication failed');
   }
@@ -60,7 +65,12 @@ app.get('/decode', (req, res) => {
         // Send a 401 Unauthorized response
         res.status(401).send('JWT verification failed');
       } else {
-        res.send(decoded);
+        console.log(decoded.username);
+        res.set({
+          'X-Username': decoded.username,
+          'X-iat': decoded.iat
+        })
+        res.send();
       }
     });
   } catch (error) {
